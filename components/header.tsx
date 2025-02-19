@@ -2,9 +2,9 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button"; // Make sure this path is correct
-import { ModeToggle } from "@/components/mode-toggle"; // Make sure this path is correct
-import { MenuIcon, X, Building2 } from "lucide-react"; // Make sure this is installed: npm install lucide-react
+import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/mode-toggle";
+import { MenuIcon, X, Building2 } from "lucide-react";
 
 export function Header() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -21,8 +21,8 @@ export function Header() {
   ];
 
   return (
-    <header className="py-4 px-6 md:px-8 bg-background/90 backdrop-blur-md transition-all duration-300">
-      <nav className="container mx-auto flex justify-between items-center">
+    <header className="py-4 bg-background/90 backdrop-blur-md transition-all duration-300">
+      <div className="container mx-auto px-4 md:px-8 flex justify-between items-center"> {/* Container with padding */}
         <Link href="/" className="flex items-center font-bold text-xl">
           <Building2 className="h-6 w-6 mr-2 text-primary" />
           LoanBuddy
@@ -54,18 +54,18 @@ export function Header() {
         >
           {isOpen ? <X className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
         </button>
-      </nav>
+      </div> {/* Close container */}
 
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 bg-background/90 backdrop-blur-md z-50 md:hidden"
+            className="md:hidden bg-background/90 backdrop-blur-md z-50" // Remove fixed positioning
             initial="closed"
             animate="open"
             exit="closed"
             variants={menuVariants}
           >
-            <div className="flex flex-col space-y-4 p-4 pt-20">
+            <div className="container mx-auto px-4 py-4 flex flex-col space-y-4"> {/* Container for mobile menu */}
               {menuItems.map((item) => (
                 <Link
                   key={item.href}
@@ -79,19 +79,19 @@ export function Header() {
                 </Link>
               ))}
               <div className="border-t border-foreground/20 pt-4 mt-4">
-                <Link href="/Auth">
+                <Link href="/Login">
                   <Button className="w-full mb-2 hover:bg-foreground/10 transition-colors" variant="outline">
                     Login
                   </Button>
                 </Link>
-                <Link href="/register">
+                <Link href="/Register">
                   <Button className="w-full hover:bg-foreground/10 transition-colors">Register</Button>
                 </Link>
               </div>
               <div className="pt-4">
                 <ModeToggle />
               </div>
-            </div>
+            </div> {/* Close container for mobile menu */}
           </motion.div>
         )}
       </AnimatePresence>
