@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -29,7 +28,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-500 to-indigo-600">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-sky-100 to-sky-300">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -38,24 +37,45 @@ export default function LoginPage() {
         <Card className="w-96 bg-white shadow-2xl rounded-xl">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold">Login</CardTitle>
-            <CardDescription>Welcome back! Please enter your details.</CardDescription>
+            <CardDescription className="text-gray-600">
+              Welcome back! Please enter your details.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" onChange={handleChange} required />
+                <Label htmlFor="email" className="text-gray-700">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  onChange={handleChange}
+                  required
+                  className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
               </div>
               <div>
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" onChange={handleChange} required />
+                <Label htmlFor="password" className="text-gray-700">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  onChange={handleChange}
+                  required
+                  className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
               </div>
-              <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700">
+              <Button
+                type="submit"
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+              >
                 Login
               </Button>
               <Button
                 type="button"
-                className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 hover:bg-gray-100 text-black mt-2"
+                className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 mt-2"
                 onClick={handleGoogleLogin}
               >
                 <FcGoogle size={20} />
@@ -64,7 +84,7 @@ export default function LoginPage() {
             </form>
             <p className="text-center text-sm text-gray-600 mt-4">
               New here?{" "}
-              <Link href="/Register" className="text-indigo-600 font-semibold hover:underline">
+              <Link href="/Register" className="text-blue-500 font-semibold hover:underline">
                 Create an account
               </Link>
             </p>

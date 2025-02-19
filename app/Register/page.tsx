@@ -30,7 +30,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-500 to-teal-600">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-sky-100 to-sky-300">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
