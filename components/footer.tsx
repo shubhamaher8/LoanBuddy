@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Facebook, Twitter, Instagram, Linkedin, Mail } from "lucide-react";
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaEnvelope } from "react-icons/fa";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -22,10 +22,10 @@ export function Footer() {
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
+    { icon: FaFacebook, href: "#", label: "Facebook" },
+    { icon: FaTwitter, href: "#", label: "Twitter" },
+    { icon: FaInstagram, href: "#", label: "Instagram" },
+    { icon: FaLinkedin, href: "#", label: "LinkedIn" },
   ];
 
   return (
@@ -99,7 +99,7 @@ export function Footer() {
                 className="max-w-[200px]"
               />
               <Button>
-                <Mail className="h-4 w-4 mr-2" />
+                <FaEnvelope className="h-4 w-4 mr-2" />
                 Subscribe
               </Button>
             </div>

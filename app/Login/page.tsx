@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FcGoogle } from "react-icons/fc";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -22,17 +24,21 @@ export default function LoginPage() {
     console.log(formData);
   };
 
+  const handleGoogleLogin = () => {
+    console.log("Google Login Clicked");
+  };
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-500 to-indigo-600">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Card className="w-96 shadow-lg">
-          <CardHeader>
-            <CardTitle>Login</CardTitle>
-            <CardDescription>Enter your credentials to access your account</CardDescription>
+        <Card className="w-96 bg-white shadow-2xl rounded-xl">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">Login</CardTitle>
+            <CardDescription>Welcome back! Please enter your details.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -44,8 +50,24 @@ export default function LoginPage() {
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" onChange={handleChange} required />
               </div>
-              <Button type="submit" className="w-full">Login</Button>
+              <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700">
+                Login
+              </Button>
+              <Button
+                type="button"
+                className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 hover:bg-gray-100 text-black mt-2"
+                onClick={handleGoogleLogin}
+              >
+                <FcGoogle size={20} />
+                Login with Google
+              </Button>
             </form>
+            <p className="text-center text-sm text-gray-600 mt-4">
+              New here?{" "}
+              <Link href="/Register" className="text-indigo-600 font-semibold hover:underline">
+                Create an account
+              </Link>
+            </p>
           </CardContent>
         </Card>
       </motion.div>
