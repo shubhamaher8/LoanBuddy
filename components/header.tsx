@@ -17,6 +17,7 @@ export function Header() {
     { href: "/", label: "Home" },
     { href: "/compare", label: "Compare Loans" },
     { href: "/get-started", label: "Get Started" },
+    { href: "/dashboard", label: "Dashboard" },
   ];
 
   return (

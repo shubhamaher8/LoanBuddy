@@ -44,6 +44,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import Link from 'next/link';
 
 ChartJS.register(
   CategoryScale,
@@ -102,7 +103,7 @@ export default function ComparePage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 bg-sky-100">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -219,7 +220,9 @@ export default function ComparePage() {
                         <TableCell>₹450</TableCell>
                         <TableCell>₹27,000</TableCell>
                         <TableCell>
-                          <Button variant="outline" size="sm">Apply</Button>
+                          <Link href="/Loan">
+                            <Button variant="outline" size="sm">Apply</Button>
+                          </Link>
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -228,7 +231,9 @@ export default function ComparePage() {
                         <TableCell>₹475</TableCell>
                         <TableCell>₹28,500</TableCell>
                         <TableCell>
-                          <Button variant="outline" size="sm">Apply</Button>
+                          <Link href="/Loan">
+                            <Button variant="outline" size="sm">Apply</Button>
+                          </Link>
                         </TableCell>
                       </TableRow>
                       <TableRow>
@@ -237,7 +242,9 @@ export default function ComparePage() {
                         <TableCell>₹460</TableCell>
                         <TableCell>₹27,600</TableCell>
                         <TableCell>
-                          <Button variant="outline" size="sm">Apply</Button>
+                          <Link href="/Loan">
+                            <Button variant="outline" size="sm">Apply</Button>
+                          </Link>
                         </TableCell>
                       </TableRow>
                     </TableBody>
