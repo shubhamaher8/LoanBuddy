@@ -13,10 +13,10 @@ export function Footer() {
     { href: "/get-started", label: "Get Started" },
   ];
   const legalLinks = [
-    { href: "/privacy", label: "Privacy Policy" },
-    { href: "/terms", label: "Terms of Service" },
-    { href: "/cookies", label: "Cookie Policy" },
-    { href: "/sitemap", label: "Sitemap" },
+    { href: "/", label: "Privacy Policy" },
+    { href: "/", label: "Terms of Service" },
+    { href: "/", label: "Cookie Policy" },
+    { href: "/", label: "Sitemap" },
   ];
   const socialLinks = [
     { icon: FaFacebook, href: "#", label: "Facebook" },
