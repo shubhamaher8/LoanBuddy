@@ -1,4 +1,5 @@
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Analytics /> {/* Analytics component added here */}
+        <SpeedInsights /> {/* Speed Insights component added here */}
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
