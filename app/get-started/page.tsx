@@ -65,9 +65,11 @@ export default function GetStartedPage() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    
+    const form = e.currentTarget;  // Add this line - store form reference
 
     try {
-      const formData = new FormData(e.currentTarget);
+      const formData = new FormData(form);  // Use form instead of e.currentTarget
       const data = {
         fullName: formData.get("fullName"),
         email: formData.get("email"),
@@ -89,7 +91,7 @@ export default function GetStartedPage() {
       );
 
       // Success
-      e.currentTarget.reset();
+      form.reset();
       alert("Form submitted successfully!");
     } catch (err) {
       if (err instanceof Error) {
