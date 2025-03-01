@@ -60,29 +60,6 @@ export default function GetStartedPage() {
   const [loanTerm, setLoanTerm] = useState("60");
   const [interestRate, setInterestRate] = useState("5.75");
 
-  // Loan calculation logic
-  const calculateLoan = () => {
-    const principal = parseFloat(loanAmount);
-    const rate = parseFloat(interestRate) / 100 / 12;
-    const term = parseFloat(loanTerm);
-
-    if (!principal || !rate || !term) return null;
-
-    const monthlyPayment =
-      (principal * rate * Math.pow(1 + rate, term)) /
-      (Math.pow(1 + rate, term) - 1);
-    const totalPayment = monthlyPayment * term;
-    const totalInterest = totalPayment - principal;
-
-    return {
-      monthlyPayment: monthlyPayment.toFixed(2),
-      totalPayment: totalPayment.toFixed(2),
-      totalInterest: totalInterest.toFixed(2),
-    };
-  };
-
-  const loanDetails = calculateLoan();
-
   // Form submission handler
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -239,63 +216,6 @@ export default function GetStartedPage() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Loan Calculator */}
-        <Card className="mb-12">
-          <CardHeader>
-            <CardTitle>Loan Calculator</CardTitle>
-            <CardDescription>
-              Estimate your monthly payments and total interest
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="loanAmount">Loan Amount</Label>
-                <Input
-                  id="loanAmount"
-                  type="number"
-                  value={loanAmount}
-                  onChange={(e) => setLoanAmount(e.target.value)}
-                  placeholder="Enter loan amount"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="loanTerm">Loan Term (months)</Label>
-                <Input
-                  id="loanTerm"
-                  type="number"
-                  value={loanTerm}
-                  onChange={(e) => setLoanTerm(e.target.value)}
-                  placeholder="Enter loan term"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="interestRate">Interest Rate (%)</Label>
-                <Input
-                  id="interestRate"
-                  type="number"
-                  value={interestRate}
-                  onChange={(e) => setInterestRate(e.target.value)}
-                  placeholder="Enter interest rate"
-                />
-              </div>
-            </div>
-            {loanDetails && (
-              <div className="mt-6 space-y-2">
-                <p>
-                  Monthly Payment: ₹<strong>{loanDetails.monthlyPayment}</strong>
-                </p>
-                <p>
-                  Total Payment: ₹<strong>{loanDetails.totalPayment}</strong>
-                </p>
-                <p>
-                  Total Interest: ₹<strong>{loanDetails.totalInterest}</strong>
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
         {/* Pre-qualification Form */}
         <Card>
