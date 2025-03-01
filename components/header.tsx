@@ -6,38 +6,41 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { MenuIcon, X, Building2 } from "lucide-react";
+import { account } from "@/lib/appwrite"; // ✅ Import Appwrite authentication
 
 export function Header() {
   const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
-  // State to track whether user is logged in
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  
-  // Check login status when component mounts
+
+  // ✅ Check authentication status on mount
   React.useEffect(() => {
-    // Check if user is logged in (e.g., from localStorage, cookies, or context)
-    const checkLoginStatus = () => {
-      // This is where you'd check your auth state
-      // For example: const token = localStorage.getItem('token');
-      const token = localStorage.getItem('token');
-      setIsLoggedIn(!!token);
+    const checkAuthStatus = async () => {
+      try {
+        const user = await account.get();
+        console.log("User session:", user);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error("User not logged in:", error);
+        setIsLoggedIn(false);
+      }
     };
-    
-    checkLoginStatus();
-    
-    // You might also want to subscribe to auth state changes here
-    // For example with an event listener or auth context
+
+    checkAuthStatus();
   }, []);
-  
-  const handleLogout = () => {
-    // Clear auth token/session
-    localStorage.removeItem('token');
-    // Update state
-    setIsLoggedIn(false);
-    // Redirect to home page
-    router.push('/');
-    // Close mobile menu if open
-    setIsOpen(false);
+
+  // ✅ Logout function
+  const handleLogout = async () => {
+    try {
+      await account.deleteSession("current");
+      setIsLoggedIn(false);
+      router.refresh(); // Refresh UI
+      router.push("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setIsOpen(false);
+    }
   };
 
   const menuVariants = {
@@ -45,54 +48,53 @@ export function Header() {
     closed: { opacity: 0, x: "100%", transition: { duration: 0.3, ease: "easeInOut" } },
   };
 
-  // Common menu items that show regardless of login state
-  const commonMenuItems = [
-    { href: "/", label: "Home" },
-    { href: "/compare", label: "Compare Loans" },
+  // Navigation items
+  const menuConfig = {
+    common: [
+      { href: "/", label: "Home" },
+      { href: "/compare", label: "Compare Loans" },
+    ],
+    authenticated: [
+      { href: "/dashboard", label: "Dashboard" },
+      { href: "/get-started", label: "Getting Started" }, // ✅ Added "Getting Started"
+    ],
+  };
+
+  const menuItems = [
+    ...menuConfig.common,
+    ...(isLoggedIn ? menuConfig.authenticated : []),
   ];
-  
-  // Menu items that show only when logged in
-  const loggedInMenuItems = [
-    { href: "/dashboard", label: "Dashboard" },
-    ...commonMenuItems
-  ];
-  
-  // Menu items that show only when logged out
-  const loggedOutMenuItems = [
-    ...commonMenuItems
-  ];
-  
-  // Use the appropriate menu items based on login state
-  const menuItems = isLoggedIn ? loggedInMenuItems : loggedOutMenuItems;
 
   return (
-    <header className="py-4 bg-background/90 backdrop-blur-md transition-all duration-300">
+    <header className="py-4 bg-background/90 backdrop-blur-md transition-all duration-300 sticky top-0 z-50">
       <div className="container mx-auto px-4 md:px-8 flex justify-between items-center">
-        <Link href="/" className="flex items-center font-bold text-xl">
+        <Link href="/" className="flex items-center font-bold text-xl hover:opacity-80 transition-opacity">
           <Building2 className="h-6 w-6 mr-2 text-primary" />
           LoanBuddy
         </Link>
 
-        <div className="hidden md:flex md:items-center md:space-x-4">
-          {menuItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <Button variant="ghost" className="hover:bg-foreground/10 transition-colors">
-                {item.label}
-              </Button>
-            </Link>
-          ))}
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex md:items-center md:space-x-4">
+          <div className="flex items-center space-x-4">
+            {menuItems.map((item) => (
+              <Link key={item.href} href={item.href}>
+                <Button variant="ghost" className="hover:bg-foreground/10">
+                  {item.label}
+                </Button>
+              </Link>
+            ))}
+          </div>
+
           <div className="flex items-center space-x-4 ml-4 border-l border-foreground/20 pl-4">
             {isLoggedIn ? (
               <>
                 <Link href="/get-started">
-                  <Button variant="ghost" className="hover:bg-foreground/10 transition-colors">
-                    Get Started
-                  </Button>
+                  <Button variant="default">Getting Started</Button> {/* ✅ "Getting Started" Button */}
                 </Link>
-                <Button 
-                  variant="outline" 
-                  className="hover:bg-foreground/10 transition-colors"
+                <Button
+                  variant="outline"
                   onClick={handleLogout}
+                  className="hover:bg-destructive/10 hover:text-destructive"
                 >
                   Logout
                 </Button>
@@ -100,21 +102,18 @@ export function Header() {
             ) : (
               <>
                 <Link href="/Login">
-                  <Button variant="ghost" className="hover:bg-foreground/10 transition-colors">
-                    Login
-                  </Button>
+                  <Button variant="ghost">Login</Button>
                 </Link>
                 <Link href="/Register">
-                  <Button className="hover:bg-foreground/10 transition-colors">
-                    Register
-                  </Button>
+                  <Button variant="default">Register</Button>
                 </Link>
               </>
             )}
             <ModeToggle />
           </div>
-        </div>
+        </nav>
 
+        {/* Mobile Menu Toggle */}
         <button
           className="md:hidden text-foreground hover:text-foreground/70 transition-colors"
           onClick={() => setIsOpen(!isOpen)}
@@ -124,10 +123,11 @@ export function Header() {
         </button>
       </div>
 
+      {/* Mobile Navigation */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="md:hidden bg-background/90 backdrop-blur-md z-50"
+            className="md:hidden bg-background/90 backdrop-blur-md z-50 fixed w-full"
             initial="closed"
             animate="open"
             exit="closed"
@@ -138,46 +138,40 @@ export function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-foreground/60 hover:text-foreground text-lg py-2"
                   onClick={() => setIsOpen(false)}
+                  className="py-2"
                 >
-                  <Button variant="ghost" className="w-full hover:bg-foreground/10 transition-colors">
+                  <Button variant="ghost" className="w-full justify-start">
                     {item.label}
                   </Button>
                 </Link>
               ))}
-              <div className="border-t border-foreground/20 pt-4 mt-4">
+
+              <div className="border-t border-foreground/20 pt-4 space-y-2">
                 {isLoggedIn ? (
                   <>
-                    <Link href="/get-started" onClick={() => setIsOpen(false)}>
-                      <Button className="w-full mb-2 hover:bg-foreground/10 transition-colors" variant="outline">
-                        Get Started
-                      </Button>
+                    <Link href="/get-started">
+                      <Button className="w-full">Getting Started</Button> {/* ✅ "Getting Started" Button */}
                     </Link>
-                    <Button 
-                      className="w-full hover:bg-foreground/10 transition-colors"
-                      onClick={handleLogout}
-                    >
+                    <Button className="w-full" variant="destructive" onClick={handleLogout}>
                       Logout
                     </Button>
                   </>
                 ) : (
                   <>
-                    <Link href="/login" onClick={() => setIsOpen(false)}>
-                      <Button className="w-full mb-2 hover:bg-foreground/10 transition-colors" variant="outline">
+                    <Link href="/Login" onClick={() => setIsOpen(false)}>
+                      <Button className="w-full" variant="outline">
                         Login
                       </Button>
                     </Link>
-                    <Link href="/register" onClick={() => setIsOpen(false)}>
-                      <Button className="w-full hover:bg-foreground/10 transition-colors">
-                        Register
-                      </Button>
+                    <Link href="/Register" onClick={() => setIsOpen(false)}>
+                      <Button className="w-full">Register</Button>
                     </Link>
                   </>
                 )}
-              </div>
-              <div className="pt-4">
-                <ModeToggle />
+                <div className="pt-4 flex justify-center">
+                  <ModeToggle />
+                </div>
               </div>
             </div>
           </motion.div>
