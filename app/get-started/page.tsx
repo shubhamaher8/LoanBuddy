@@ -35,6 +35,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { CalendarDays, FileCheck, Calculator, Clock } from "lucide-react";
+import { databases } from "@/lib/appwrite"; // Import Appwrite
 
 const requiredDocuments = [
   { name: "Government-issued ID", required: true },
@@ -53,27 +54,56 @@ const eligibilityCriteria = [
 ];
 
 export default function GetStartedPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [loanAmount, setLoanAmount] = useState("50000");
   const [loanTerm, setLoanTerm] = useState("60");
   const [interestRate, setInterestRate] = useState("5.75");
 
-  const calculateLoan = () => {
-    const principal = parseFloat(loanAmount);
-    const rate = parseFloat(interestRate) / 100 / 12;
-    const term = parseFloat(loanTerm);
+  // Form submission handler
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
     
-    const monthlyPayment = (principal * rate * Math.pow(1 + rate, term)) / (Math.pow(1 + rate, term) - 1);
-    const totalPayment = monthlyPayment * term;
-    const totalInterest = totalPayment - principal;
+    const form = e.currentTarget;  // Add this line - store form reference
 
-    return {
-      monthlyPayment: monthlyPayment.toFixed(2),
-      totalPayment: totalPayment.toFixed(2),
-      totalInterest: totalInterest.toFixed(2),
-    };
+    try {
+      const formData = new FormData(form);  // Use form instead of e.currentTarget
+      const data = {
+        fullName: formData.get("fullName"),
+        email: formData.get("email"),
+        phoneNumber: formData.get("phoneNumber"), // Matches DB field
+        annualIncome: parseInt(formData.get("annualIncome") as string, 10), // Parse as integer
+      };
+
+      // Validation
+      if (!data.fullName || !data.email || !data.phoneNumber || !data.annualIncome ) {
+        throw new Error("Please fill all required fields");
+      }
+
+      // Send to Appwrite
+      await databases.createDocument(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID!,
+        "unique()",
+        data
+      );
+
+      // Success
+      form.reset();
+      alert("Form submitted successfully!");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || "An error occurred. Please try again.");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  const loanDetails = calculateLoan();
 
   return (
     <div className="container mx-auto px-4 py-8 bg-sky-100">
@@ -82,6 +112,7 @@ export default function GetStartedPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
+        {/* Title */}
         <h1 className="text-3xl font-bold mb-8">Get Started</h1>
 
         {/* Application Process */}
@@ -197,27 +228,55 @@ export default function GetStartedPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Full Name */}
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
-                  <Input id="fullName" required />
+                  <Input
+                    id="fullName"
+                    name="fullName"
+                    required
+                  />
                 </div>
+
+                {/* Email */}
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" required />
+                  <Input
+                    id="email"
+                    type="email"
+                    name="email"
+                    required
+                  />
                 </div>
+
+                {/* Phone Number */}
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input id="phone" type="tel" required />
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    name="phoneNumber"
+                    required
+                  />
                 </div>
+
+                {/* Annual Income */}
                 <div className="space-y-2">
-                  <Label htmlFor="income">Annual Income</Label>
-                  <Input id="income" type="number" required />
+                  <Label htmlFor="annualIncome">Annual Income</Label>
+                  <Input
+                    id="annualIncome"
+                    type="number"
+                    name="annualIncome"
+                    required
+                  />
                 </div>
+
+                {/* Loan Purpose */}
                 <div className="space-y-2">
                   <Label htmlFor="loanPurpose">Loan Purpose</Label>
-                  <Select>
+                  <Select name="loanPurpose">
                     <SelectTrigger>
                       <SelectValue placeholder="Select purpose" />
                     </SelectTrigger>
@@ -227,13 +286,30 @@ export default function GetStartedPage() {
                   </Select>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="terms" />
+
+              {/* Terms Checkbox */}
+              <div className="flex items-center space-x-2 mt-4">
+                <Checkbox
+                  id="terms"
+                  name="terms"
+                  required
+                />
                 <Label htmlFor="terms">
                   I agree to the terms and conditions and consent to credit check
                 </Label>
               </div>
-              <Button type="submit">Submit Pre-qualification</Button>
+
+              {/* Error Message */}
+              {error && <p className="text-red-500 mt-4">{error}</p>}
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="mt-6 bg-blue-600 hover:bg-blue-700 w-full md:w-auto"
+              >
+                {isLoading ? "Submitting..." : "Submit Pre-qualification"}
+              </Button>
             </form>
           </CardContent>
         </Card>
