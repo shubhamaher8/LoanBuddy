@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { MenuIcon, X, Building2 } from "lucide-react";
-import { account } from "@/lib/appwrite"; // ✅ Import Appwrite authentication
+import { Client, Account } from "appwrite"; // ✅ Import Appwrite authentication
 
 export function Header() {
   const router = useRouter();
@@ -17,6 +17,8 @@ export function Header() {
   React.useEffect(() => {
     const checkAuthStatus = async () => {
       try {
+        const client = new Client();
+        const account = new Account(client);
         const user = await account.get();
         console.log("User session:", user);
         setIsLoggedIn(true);
@@ -32,6 +34,8 @@ export function Header() {
   // ✅ Logout function
   const handleLogout = async () => {
     try {
+      const client = new Client();
+      const account = new Account(client);
       await account.deleteSession("current");
       setIsLoggedIn(false);
       router.refresh(); // Refresh UI
