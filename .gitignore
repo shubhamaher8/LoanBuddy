@@ -30,6 +30,7 @@ yarn-error.log*
 # vercel
 .vercel
 
-# typescript
+# typescriptgit merge Auth
+
 *.tsbuildinfo
 next-env.d.ts
