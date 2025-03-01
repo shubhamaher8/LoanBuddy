@@ -1,5 +1,5 @@
 // appwrite.ts
-import { Client, Databases } from 'appwrite';
+import { Account ,Client, Databases } from 'appwrite';
 
 const client = new Client();
 client.setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!) 
@@ -9,4 +9,6 @@ client.setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
 // Initialize the Databases service
 const databases = new Databases(client);
 
-export { databases };
+const account = new Account(client);
+
+export { databases, account};

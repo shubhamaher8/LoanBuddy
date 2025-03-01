@@ -26,7 +26,7 @@ export default function LoginPage() {
         const user = await account.get(); // Check if user is already logged in
         if (user) router.push("/dashboard");
       } catch (error) {
-        console.log("No active session");
+        //console.log("No active session");
       }
     };
     checkUser();
@@ -89,7 +89,7 @@ export default function LoginPage() {
               </Button>
             </form>
             <p className="text-center text-sm text-gray-600 mt-4">
-              New here? <Link href="/register" className="text-blue-500 font-semibold hover:underline">Create an account</Link>
+              New here? <Link href="/Register" className="text-blue-500 font-semibold hover:underline">Create an account</Link>
             </p>
           </CardContent>
         </Card>
