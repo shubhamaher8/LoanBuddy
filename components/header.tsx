@@ -6,39 +6,38 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { MenuIcon, X, Building2 } from "lucide-react";
-import { Client, Account } from "appwrite"; // ✅ Import Appwrite authentication
+import { Client, Account } from "appwrite";
+import { account } from "@/lib/appwrite";
 
 export function Header() {
   const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true); // Track loading state
 
-  // ✅ Check authentication status on mount
+
   React.useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        const client = new Client();
-        const account = new Account(client);
         const user = await account.get();
-        console.log("User session:", user);
+        console.log("User logged in:", user);
         setIsLoggedIn(true);
       } catch (error) {
-        console.error("User not logged in:", error);
+        console.error("No active session:", error);
         setIsLoggedIn(false);
+      } finally {
+        setIsLoading(false); // Stop loading after checking
       }
     };
 
     checkAuthStatus();
-  }, []);
+  }, []); // Runs only once on mount
 
-  // ✅ Logout function
   const handleLogout = async () => {
     try {
-      const client = new Client();
-      const account = new Account(client);
       await account.deleteSession("current");
       setIsLoggedIn(false);
-      router.refresh(); // Refresh UI
+      router.refresh();
       router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -53,21 +52,17 @@ export function Header() {
   };
 
   // Navigation items
-  const menuConfig = {
-    common: [
-      { href: "/", label: "Home" },
-      { href: "/compare", label: "Compare Loans" },
-    ],
-    authenticated: [
-      { href: "/dashboard", label: "Dashboard" },
-      { href: "/get-started", label: "Getting Started" }, // ✅ Added "Getting Started"
-    ],
-  };
-
-  const menuItems = [
-    ...menuConfig.common,
-    ...(isLoggedIn ? menuConfig.authenticated : []),
-  ];
+  const menuItems = isLoggedIn
+    ? [
+        { href: "/", label: "Home" },
+        { href: "/compare", label: "Compare Loans" },
+        { href: "/dashboard", label: "Dashboard" },
+        { href: "/get-started", label: "Getting Started" },
+      ]
+    : [
+        { href: "/", label: "Home" },
+        { href: "/compare", label: "Compare Loans" },
+      ];
 
   return (
     <header className="py-4 bg-background/90 backdrop-blur-md transition-all duration-300 sticky top-0 z-50">
@@ -90,16 +85,11 @@ export function Header() {
           </div>
 
           <div className="flex items-center space-x-4 ml-4 border-l border-foreground/20 pl-4">
-            {isLoggedIn ? (
+            {isLoading ? (
+              <p>Loading...</p> // Show loading state
+            ) : isLoggedIn ? (
               <>
-                <Link href="/get-started">
-                  <Button variant="default">Getting Started</Button> {/* ✅ "Getting Started" Button */}
-                </Link>
-                <Button
-                  variant="outline"
-                  onClick={handleLogout}
-                  className="hover:bg-destructive/10 hover:text-destructive"
-                >
+                <Button variant="outline" onClick={handleLogout} className="hover:bg-destructive/10 hover:text-destructive">
                   Logout
                 </Button>
               </>
@@ -139,12 +129,7 @@ export function Header() {
           >
             <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
               {menuItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className="py-2"
-                >
+                <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)} className="py-2">
                   <Button variant="ghost" className="w-full justify-start">
                     {item.label}
                   </Button>
@@ -152,15 +137,12 @@ export function Header() {
               ))}
 
               <div className="border-t border-foreground/20 pt-4 space-y-2">
-                {isLoggedIn ? (
-                  <>
-                    <Link href="/get-started">
-                      <Button className="w-full">Getting Started</Button> {/* ✅ "Getting Started" Button */}
-                    </Link>
-                    <Button className="w-full" variant="destructive" onClick={handleLogout}>
-                      Logout
-                    </Button>
-                  </>
+                {isLoading ? (
+                  <p>Loading...</p> // Show loading while checking auth
+                ) : isLoggedIn ? (
+                  <Button className="w-full" variant="destructive" onClick={handleLogout}>
+                    Logout
+                  </Button>
                 ) : (
                   <>
                     <Link href="/Login" onClick={() => setIsOpen(false)}>
