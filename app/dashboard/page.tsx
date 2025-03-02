@@ -1,6 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+
+import { account } from "../../lib/appwrite";
 import {
   Card,
   CardContent,
@@ -76,11 +78,24 @@ const chartOptions = {
       text: 'Interest Rate Trends',
     },
   },
-  maintainAspectRatio: false, // Ensure the chart maintains aspect ratio
+  maintainAspectRatio: false, 
 };
 
 export default function Dashboard() {
   const [sortBy, setSortBy] = useState("rate");
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    async function getUser() {
+      try {
+        const user = await account.get();
+        setUserName(user.name); 
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    }
+    getUser();
+  }, []);
 
   return (
     <div className="container mx-auto px-4 pt-24 pb-16 bg-sky-100 text-gray-900">
@@ -89,7 +104,10 @@ export default function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-3xl font-bold mb-8">Loan Dashboard</h1>
+       <h1 className="text-3xl font-bold mb-8">Loan Dashboard</h1> 
+       <h2 className="text-3xl font-bold mb-8">
+          {userName ? `Hello, ${userName}!` : "Loading..."}
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-white rounded-xl p-6">
             <CardHeader>
