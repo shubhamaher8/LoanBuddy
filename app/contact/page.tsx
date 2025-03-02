@@ -1,5 +1,6 @@
 "use client";
 
+import { databases } from "@/lib/appwrite"; // Import Appwrite
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -47,10 +48,45 @@ export default function ContactPage() {
     subject: "",
     message: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
+    setIsLoading(true);
+    setError(null);
+
+    const data = {
+      Name: formData.name,
+      Email: formData.email,
+      Subject: formData.subject,
+      Message: formData.message,
+    };
+
+    // Validation
+    if (!data.Name || !data.Email || !data.Subject || !data.Message) {
+      setError("Please fill all required fields");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Send to Appwrite
+      await databases.createDocument(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_1!,
+        "unique()",
+        data
+      );
+      // Reset form
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      alert("Form submitted successfully!");
+    } catch (err: any) {
+      setError(err.message || "An error occurred. Please try again.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -79,9 +115,9 @@ export default function ContactPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="Name">Name</Label>
                   <Input
-                    id="name"
+                    id="Name"
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
@@ -90,9 +126,9 @@ export default function ContactPage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="Email">Email</Label>
                   <Input
-                    id="email"
+                    id="Email"
                     type="email"
                     value={formData.email}
                     onChange={(e) =>
@@ -103,9 +139,9 @@ export default function ContactPage() {
                 </div>
               </div>
               <div>
-                <Label htmlFor="subject">Subject</Label>
+                <Label htmlFor="Subject">Subject</Label>
                 <Input
-                  id="subject"
+                  id="Subject"
                   value={formData.subject}
                   onChange={(e) =>
                     setFormData({ ...formData, subject: e.target.value })
@@ -114,9 +150,9 @@ export default function ContactPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="message">Message</Label>
+                <Label htmlFor="Message">Message</Label>
                 <Textarea
-                  id="message"
+                  id="Message"
                   value={formData.message}
                   onChange={(e) =>
                     setFormData({ ...formData, message: e.target.value })
@@ -124,7 +160,15 @@ export default function ContactPage() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">Send Message</Button>
+              {error && <p className="text-red-500">{error}</p>}
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="mt-6 bg-blue-600 hover:bg-blue-700 w-full md:w-auto"
+              >
+                {isLoading ? "Submitting..." : "Submit Pre-qualification"}
+              </Button>
             </form>
           </CardContent>
         </Card>
@@ -135,9 +179,15 @@ export default function ContactPage() {
             <CardTitle>Our Info</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="flex items-center gap-2"><Mail size={20} /> support@loanbuddy.com</p>
-            <p className="flex items-center gap-2"><Phone size={20} /> +91 98765 43210</p>
-            <p className="flex items-center gap-2"><MapPin size={20} /> Mumbai, India</p>
+            <p className="flex items-center gap-2">
+              <Mail size={20} /> support@loanbuddy.com
+            </p>
+            <p className="flex items-center gap-2">
+              <Phone size={20} /> +91 98765 43210
+            </p>
+            <p className="flex items-center gap-2">
+              <MapPin size={20} /> Mumbai, India
+            </p>
             <div>
               <h3 className="font-semibold">Business Hours</h3>
               {businessHours.map((bh, index) => (
