@@ -45,7 +45,7 @@ export default function LoginPage() {
 
     try {
       await account.createEmailPasswordSession(formData.email, formData.password);
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err: any) {
       setError(err.message);
     }
@@ -56,7 +56,7 @@ export default function LoginPage() {
   // Handle Google OAuth login
   const handleGoogleLogin = async () => {
     try {
-      await account.createOAuth2Session("google", `${window.location.origin}/dashboard`);
+      await account.createOAuth2Session("google" as any, `${window.location.origin}/dashboard`);
     } catch (err: any) {
       setError("Google login failed");
     }

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation"; 
@@ -47,7 +46,7 @@ export default function RegisterPage() {
 
   const handleGoogleRegister = async () => {
     try {
-      await account.createOAuth2Session("google", `${window.location.origin}/dashboard`);
+      await account.createOAuth2Session("google" as any, `${window.location.origin}/dashboard`);
     } catch (err: any) {
       setError("Google signup failed");
     }
