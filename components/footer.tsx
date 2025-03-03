@@ -1,9 +1,47 @@
+"use client";
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaEnvelope } from "react-icons/fa";
+import { databases } from "@/lib/appwrite"; // Import Appwrite
 
 export function Footer() {
+  const [formData, setFormData] = useState({ email: "" });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    const data = { Email: formData.email };
+
+    if (!data.Email) {
+      setError("Please fill all required fields");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      await databases.createDocument(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_3!,
+        "unique()",
+        data
+      );
+      // Reset form
+      setFormData({ email: "" });
+      alert("Form submitted successfully!");
+    } catch (err: any) {
+      setError(err.message || "An error occurred. Please try again.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const currentYear = new Date().getFullYear();
   const quickLinks = [
     { href: "/", label: "Home" },
@@ -86,17 +124,24 @@ export function Footer() {
             <p className="text-gray-600 mb-4">
               Subscribe to our newsletter for the latest updates and offers.
             </p>
-            <div className="flex space-x-2">
+            <form onSubmit={handleSubmit} className="flex space-x-2">
               <Input
                 type="email"
                 placeholder="Enter your email"
+                value={formData.email}
+                onChange={(e) => setFormData({ email: e.target.value })}
                 className="max-w-[200px] bg-white text-gray-900 border-gray-300"
               />
-              <Button className="bg-blue-500 hover:bg-blue-600 text-white border-none">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="bg-blue-500 hover:bg-blue-600 text-white border-none"
+              >
                 <FaEnvelope className="h-4 w-4 mr-2" />
-                Subscribe
+                {isLoading ? "Submitting..." : "Subscribe"}
               </Button>
-            </div>
+            </form>
+            {error && <p className="mt-2 text-red-500">{error}</p>}
           </div>
         </div>
         <div className="border-t mt-12 pt-8 text-center text-gray-600">
