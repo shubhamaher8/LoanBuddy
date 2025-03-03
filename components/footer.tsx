@@ -57,10 +57,10 @@ export function Footer() {
     { href: "/", label: "Sitemap" },
   ];
   const socialLinks = [
-    { icon: FaFacebook, href: "#", label: "Facebook" },
-    { icon: FaTwitter, href: "#", label: "Twitter" },
-    { icon: FaInstagram, href: "#", label: "Instagram" },
-    { icon: FaLinkedin, href: "#", label: "LinkedIn" },
+    { icon: FaFacebook, href: "https://www.facebook.com/", label: "Facebook" },
+    { icon: FaTwitter, href: "https://x.com/ShubhamAhe33390", label: "Twitter" },
+    { icon: FaInstagram, href: "https://www.instagram.com/shubhamgokulaher/", label: "Instagram" },
+    { icon: FaLinkedin, href: "https://www.linkedin.com/in/shubham-aher-5a5a62291/", label: "LinkedIn" },
   ];
 
   return (
@@ -78,6 +78,8 @@ export function Footer() {
                 <Link
                   key={label}
                   href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-600 hover:text-blue-500 transition-colors"
                   aria-label={label}
                 >
